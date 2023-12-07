@@ -7,7 +7,7 @@ module.exports = async function readLines(filename) {
         reject(err);
       }
 
-      const inputLines = data.split('\n').filter(line => Boolean(line));
+      const inputLines = data.split('\n');
       resolve(inputLines);
     });
   });
