@@ -1,5 +1,4 @@
 const readLines = require('../utils/readLines');
-const fs = require('fs');
 
 const CARD_RANKING_ORDER = [
   'A',
