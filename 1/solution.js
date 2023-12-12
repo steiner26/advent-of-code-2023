@@ -1,9 +1,12 @@
 const fs = require('fs');
 
-const digitRegex = /[0-9]/g;
+const digitRegex = /\d/g;
+const lastDigitRegex = /.*\d/g;
 //TODO this does not work for overlapping digit names eg. eighthree
 const digitOrWordRegex =
-  /(?=[0-9]|one|two|three|four|five|six|seven|eight|nine)/g;
+  /([0-9]|one|two|three|four|five|six|seven|eight|nine)/g;
+const lastDigitOrWordRegex =
+  /.*(\d|one|two|three|four|five|six|seven|eight|nine)/g;
 
 const WORD_TO_DIGIT_MAP = {
   one: 1,
@@ -29,16 +32,16 @@ function convertToNumber(digit) {
   return WORD_TO_DIGIT_MAP[digit];
 }
 
-function calculateCalibrationDoc(lines, regex) {
-  const digitMatches = lines.map(line => [...line.matchAll(regex)]);
-  console.log(digitMatches[0]);
+function calculateCalibrationDoc(lines, firstRegex, lastRegex) {
+  const lineValues = lines.map(line => {
+    const digitMatches = [...line.matchAll(firstRegex)];
+    const lastDigitMatches = [...line.matchAll(lastRegex)];
 
-  const lineValues = digitMatches.map(
-    matches =>
-      10 * convertToNumber(matches[0]) +
-      convertToNumber(matches[matches.length - 1]),
-  );
-  console.log([...lineValues.slice(0, 10)]);
+    return (
+      10 * convertToNumber(digitMatches[0][0]) +
+      convertToNumber(lastDigitMatches[0][1])
+    );
+  });
 
   return lineValues.reduce((a, b) => a + b, 0);
 }
@@ -52,8 +55,17 @@ fs.readFile(
     const inputLines = data.split('\n').filter(line => Boolean(line));
 
     //54940
-    console.log(calculateCalibrationDoc(inputLines, digitRegex));
+    console.log(
+      calculateCalibrationDoc(inputLines, digitRegex, lastDigitRegex),
+    );
 
-    console.log(calculateCalibrationDoc(inputLines, digitOrWordRegex));
+    //54208
+    console.log(
+      calculateCalibrationDoc(
+        inputLines,
+        digitOrWordRegex,
+        lastDigitOrWordRegex,
+      ),
+    );
   },
 );
