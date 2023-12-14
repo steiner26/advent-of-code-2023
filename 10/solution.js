@@ -120,35 +120,67 @@ const isPositionEnclosedByLoop = ({ x, y }, loopTracker) => {
     return false;
   }
 
-  let enclosedLeft = false;
+  let enclosedLeft = 0;
+  let startedLeft = false;
 
   for (let i = x; i >= 0; i--) {
-    if (loopTracker[y][i] === HORIZONTAL || loopTracker[y][i] === BOTH) {
-      enclosedLeft = !enclosedLeft;
+    if (loopTracker[y][i] === HORIZONTAL) {
+      enclosedLeft += 1;
+    }
+
+    if (loopTracker[y][i] === BOTH) {
+      startedLeft = !startedLeft;
+      if (!startedLeft) {
+        enclosedLeft += 1;
+      }
     }
   }
 
-  let enclosedRight = false;
+  let enclosedRight = 0;
+  let startedRight = false;
 
   for (let i = x; i < loopTracker[0].length; i++) {
-    if (loopTracker[y][i] === HORIZONTAL || loopTracker[y][i] === BOTH) {
-      enclosedRight = !enclosedRight;
+    if (loopTracker[y][i] === HORIZONTAL) {
+      enclosedLeft += 1;
+    }
+
+    if (loopTracker[y][i] === BOTH) {
+      startedRight = !startedRight;
+      if (!startedRight) {
+        enclosedRight += 1;
+      }
     }
   }
 
-  let enclosedUp = false;
+  let enclosedUp = 0;
+  let startedUp = false;
 
   for (let i = y; i >= 0; i--) {
-    if (loopTracker[i][x] === VERTICAL || loopTracker[i][x] === BOTH) {
-      enclosedUp = !enclosedUp;
+    if (loopTracker[i][x] === VERTICAL) {
+      enclosedUp += 1;
+    }
+
+    if (loopTracker[i][x] === BOTH) {
+      startedUp = !startedUp;
+      if (!startedUp) {
+        enclosedUp += 1;
+      }
     }
   }
 
-  let enclosedDown = false;
+  let enclosedDown = 0;
+  let startedDown = false;
 
   for (let i = y; i < loopTracker.length; i++) {
-    if (loopTracker[i][x] === VERTICAL || loopTracker[i][x] === BOTH) {
-      enclosedDown = !enclosedDown;
+    if (loopTracker[i][x] === VERTICAL) {
+      enclosedDown += 1;
+    }
+
+    if (loopTracker[i][x] === BOTH) {
+      startedDown = !startedDown;
+      if (!startedDown) {
+        enclosedDown += 1;
+      }
     }
   }
 
@@ -157,7 +189,11 @@ const isPositionEnclosedByLoop = ({ x, y }, loopTracker) => {
     { x, y },
   );
 
-  const enclosed = enclosedLeft && enclosedRight && enclosedUp && enclosedDown;
+  const enclosed =
+    enclosedLeft % 2 == 1 &&
+    enclosedRight % 2 === 1 &&
+    enclosedUp % 2 === 1 &&
+    enclosedDown % 2 === 1;
   if (enclosed) {
     loopTracker[y][x] = ENCLOSED;
   }
